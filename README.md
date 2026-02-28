@@ -63,3 +63,25 @@ docker buildx build --platform linux/amd64,linux/arm64 -t kirbownz/yesno-poller:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `MOCK`   | `false` | Set to `true` to use mock responses instead of the real API (20% yes, 80% no) |
+
+
+## Using Docker Compose
+
+Other option would be to use Docker Compose to manage the container. You can create a `docker-compose.yml` file with the following content:
+
+```yaml
+services:
+  yesno-poller:
+    image: kirbownz/yesno-poller:latest
+    restart: unless-stopped
+
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 60 --cleanup yesno-poller
+```
+
+This will run the `yesno-poller` container and a `watchtower` container that checks for updates every minute. If a new image is available,
+Watchtower will pull it and restart the `yesno-poller` container with the latest version. The `--cleanup` flag ensures that old images are
+removed after the update.
