@@ -21,6 +21,8 @@ if [[ ! "${branch}" =~ ^[a-zA-Z0-9._/-]+$ ]]; then
   log "Invalid branch name '${branch}', falling back to main"
   branch="main"
 fi
+git fetch origin "${branch}" || log "No changes to fetch"
+git switch "${branch}" 2>/dev/null || git switch -c "${branch}" "origin/${branch}"
 git pull origin "${branch}" || log "No changes to pull"
 
 log "Running update.sh"
